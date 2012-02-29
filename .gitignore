@@ -1,0 +1,9 @@
+*.pyc
+settings_local*
+!settings_local.py.example
+.*.sw*
+*~
+staticfiles/*
+media/*
+push.sh
+apps/mainsite/static/css/screen.css

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <form class="form-horizontal" action="/login/" method="POST">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></input>
+        <div class="control-group">
+            <label class="control-label" for="input-username">Username</label>
+            <div class="controls">
+                {{form.username|safe}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="input-password">Password</label>
+            <div class="controls">
+                {{form.password|safe}}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <input class="btn btn-primary" type="submit" value="Submit" />
+            </div>
+        </div>
+        <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+
+    <section class="span4 list-section" id="ingredient-section">
+        <div class="headbox boxy">
+            <h1>Ingredients</h1>
+            <button class="btn btn-primary inline-button edit-controls" id="add-ingredient">+</button>
+            <div class="input-prepend">
+                <span class="add-on"><i class="icon-search"></i></span>
+                <input type="text" class="input-medium" placeholder="Filter"/>
+            </div>
+        </div>
+
+        <!-- Ajax population -->
+        <div class="alert alert-error main-error" id="ingredient-error">
+            <a class="close">x</a>
+            <h2>Error!</h2>
+            <p/>
+        </div>
+        <ul class="item-list" id="ingredient-list"/>
+    </section>
+
+    <section class="span8 list-section" id="meal-section">
+        <div class="headbox boxy">
+        <h1>Meals</h1>
+            <button class="btn btn-primary inline-button edit-controls" id="add-meal">+</button>
+            <div class="" data-toggle="buttons-radio">
+                <button class="btn" id="switch-all">All</button>
+                <button class="btn" id="switch-union">Union</button>
+                <button class="btn" id="switch-intersection">Intersection</button>
+            </div>
+        </div>
+
+        <!-- Ajax population -->
+        <div class="alert alert-error main-error" id="meal-error">
+            <a class="close">x</a>
+            <h2>Error!</h2>
+            <p/>
+        </div>
+        <ul class="item-list" id="meal-list" />
+    </section>
+
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Show edit controls if logged in
+    window.allowEditActions = false;
+    {% if user.is_authenticated() %}
+        window.allowEditActions = true;
+        $(function()
+        {
+            $('.edit-controls').show();
+        });
+    {% endif %}
+</script>
+{% endblock %}

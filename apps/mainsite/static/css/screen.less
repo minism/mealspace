@@ -1,0 +1,126 @@
+@import '../bootstrap/less/variables.less';
+
+@thumbsize: 150px;
+
+.corners(@rad)
+{
+    -webkit-border-radius: @rad;
+    -moz-border-radius: @rad;
+    -o-border-radius: @rad;
+    border-radius: @rad;
+}
+
+.headbox
+{
+    h1
+    {
+        margin-bottom: 0.5em;
+    }
+
+    input, span
+    {
+        display: inline;
+    }
+
+    color: @white;
+    background-color: @grayLighter;
+    padding: 20px;
+    height: 5em;
+}
+
+.list-section
+{
+    .main-error
+    {
+        display: none;
+        margin-top: 1.5em;
+    }
+}
+
+ul.item-list
+{
+    margin-left: 0;
+}
+
+li.list-item
+{
+    .corners(5px);
+    border: 1px solid #ddd;
+    margin-top: 5px;
+    padding: 5px;
+    overflow: hidden;
+    list-style-type: none;
+
+    img
+    {
+        float: left;
+        height: @thumbsize;
+        width: @thumbsize;
+    }
+
+    .mainframe
+    {
+        margin-left: @thumbsize + 20;
+    }
+
+    .meal-ingredients
+    {
+        background-color: @grayLighter;
+        .corners(5px);
+        padding: 5px;
+    }
+}
+
+.selected
+{
+    background-color: @yellow;
+}
+
+.scrollable
+{
+    max-height: 400px;
+    overflow: auto;
+}
+
+.boxy
+{
+    .corners(5px);    
+}
+
+.inline-button
+{
+    display: inline;
+    float: right;
+}
+
+.edit-controls
+{
+    display: none;
+}
+
+#ingredient-list
+{
+    li.list-item
+    {
+        cursor: pointer;
+    }
+}
+
+
+#meal-list
+{
+    h2
+    {
+        margin-bottom: 0.5em;
+    }
+
+    p
+    {
+        margin-bottom: 1em;
+    }
+
+    li.list-item
+    {
+        padding: 10px;
+    }
+}

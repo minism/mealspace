@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% endblock %}
+
+        <title>{% block page_title %}Mealspace{% endblock %}</title>
+        {% block styles %}
+            <!-- <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Telex" type="text/css"> -->
+            <!-- <link rel="stylesheet" href="{{STATIC_URL}}css/theme/jquery-ui-1.8.17.custom.css" type="text/css"> -->
+            <!-- <link rel="stylesheet" href="{{STATIC_URL}}css/reset.css" type="text/css"> -->
+            {% if debug %}
+                <link rel="stylesheet/less" href="{{STATIC_URL}}bootstrap/less/bootstrap.less" type="text/css">
+                <link rel="stylesheet/less" href="{{STATIC_URL}}css/screen.less">
+                <script src="{{STATIC_URL}}js/less.js"></script>
+            {% else %}
+                <link rel="stylesheet" href="{{STATIC_URL}}bootstrap/css/bootstrap.css" type="text/css">
+                <link rel="stylesheet" href="{{STATIC_URL}}css/screen.css" type="text/css">
+            {% endif %}
+        {% endblock %}
+    </head>
+
+    <body>
+        <noscript>
+            <p>Javascript is required to use this site.</p>
+        </noscript>
+        {% block nav %}
+        <nav class="navbar">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="brand" href="/">Mealspace</a>
+
+                    {% if user.is_authenticated() %}
+                        <a href="/logout" class="btn btn-inverse">Logout {{user.username}}</a>
+                        <a href="#" id="help-button" class="btn" rel="popover" data-content="Select ingredients on the left to filter meals on the right.  Click the plus icon(s) to add a new ingredient or meal.  Double click an ingredient or meal to edit." data-original-title="Help">Help</a>
+                    {% else %}
+                        <a href="/login?next=/" class="btn btn-inverse">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+        {% endblock %}
+
+        <section class="container">
+            {% block content %}
+            {% endblock %}
+        </section>
+
+        {% block scripts %}
+            <script src="{{STATIC_URL}}js/jquery.js"></script>
+            <script src="{{STATIC_URL}}js/json2.js"></script>
+            <script src="{{STATIC_URL}}js/underscore-min.js"></script>
+            <script src="{{STATIC_URL}}js/backbone-min.js"></script>
+            <script src="{{STATIC_URL}}bootstrap/js/bootstrap-button.js"></script>
+            <script src="{{STATIC_URL}}bootstrap/js/bootstrap-alert.js"></script>
+            <script src="{{STATIC_URL}}bootstrap/js/bootstrap-modal.js"></script>
+            <script src="{{STATIC_URL}}bootstrap/js/bootstrap-tooltip.js"></script>
+            <script src="{{STATIC_URL}}bootstrap/js/bootstrap-popover.js"></script>
+
+            <script src="{{STATIC_URL}}js/app.js"></script>
+            <script src="{{STATIC_URL}}js/extra.js"></script>
+        {% endblock %}
+    </body>
+</html>
