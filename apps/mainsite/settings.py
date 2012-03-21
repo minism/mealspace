@@ -17,7 +17,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'south',
+
+    # 'south',
     'tastypie',
 
     'food',
@@ -108,7 +109,13 @@ LOGGING = {
 
 
 
-# try to import local_settings if present
+# try to import prod settings if present
+try:
+    from settings_production import *
+except ImportError as e:
+    pass
+
+# try to import local settings if present
 try:
     from settings_local import *
 except ImportError as e:
