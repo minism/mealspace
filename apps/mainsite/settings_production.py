@@ -1,12 +1,14 @@
 from settings import *
 from mainsite import TOP_DIR
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 TASTYPIE_FULL_DEBUG = DEBUG
 
 TIME_ZONE = 'America/Los_Angeles'
 LANGUAGE_CODE = 'en-us'
+
+STATIC_URL = '//minornine.com/heroku/mealspace/static/'
 
 DATABASES = {
     'default': {
