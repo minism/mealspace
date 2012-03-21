@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
 
     # 'south',
+    'gunicorn',
     'tastypie',
 
     'food',
