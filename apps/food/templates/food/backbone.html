@@ -1,5 +1,9 @@
 <script type="text/template" id="IngredientView-template">
-    <div class="ingredient-name"></div>
+    <div class="view">
+        <input type="checkbox" class="ingredient-select">
+        </input>
+        <span class="ingredient-name"></span>
+    </div>
 </script>
 
 <script type="text/template" id="MealView-template">  
@@ -201,10 +205,8 @@ var IngredientView = BaseView.extend({
     },
 
     select: function() {
-        if (!this.model.get('editing'))
-        {
-            this.model.toggleSelection();
-        }
+        this.model.toggleSelection();
+        this.model.get('selected') && this.$('.ingredient-select').attr('checked', 'checked') || this.$('.ingredient-select').removeAttr('checked')
     },
 
     edit: function() {
@@ -512,6 +514,9 @@ $(function() {
     // Load initial data
     ingredients = new IngredientCollection;
     ingredients.fetch({
+        data: {
+            limit: 1000,
+        },
         success: function(collection) {
             populateCollectionViews(collection, addIngredientView);
             ing_progress.parent('div').remove();
