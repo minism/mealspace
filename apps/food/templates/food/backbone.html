@@ -1,6 +1,52 @@
+<script type="text/template" id="IngredientView-template">
+    <div class="ingredient-name"></div>
+</script>
+
+<script type="text/template" id="MealView-template">  
+    <h2 class="meal-name">Name</h2>
+    <p class="meal-description">Description</p>
+    <div class="meal-ingredients">
+    </div>
+</script>
+
+<script type="text/template" id="MealEditView-template">
+    <div class="modal">
+       <div class="modal-header">
+           <a class="close" data-dismiss="modal">×</a>
+           <h1>Create/Edit Meal</h1>
+       </div>
+       <div class="modal-body">
+       <form class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label" for="meal-name">Name</label>
+            <div class="controls">                               
+                <input type="input-xlarge" id="meal-name">
+            </div>
+        </div>
+        <div class="control-group">
+        <label class="control-label" for="meal-description">Description</label>
+           <div class="controls">
+                <textarea id="meal-description"/>
+            </div>
+        </div>
+        <div class="control-group">
+           <label class="control-label" for="meal-ingredients">Ingredients</label>
+           <div class="controls">
+               <select size="20" id="meal-ingredients" multiple="multiple"/>
+           </div>
+       </div>
+    </form>
+       </div>
+       <div class="modal-footer">
+           <button class="btn btn-primary save-button">Save</button>
+       </div>
+    </div>
+</script>
+
+
+<script>
+
 /* Globals */
-var API_ROOT = '/food/api/v1/';
-var ingredients, meals;
 var new_ingredient_view = null;
 var lastFilterType = 'intersection';
 
@@ -9,11 +55,7 @@ var lastFilterType = 'intersection';
 // any editing but will show controls.
 function documentEditable()
 {
-    if (window.allowEditActions && window.allowEditActions == true)
-    {
-        return true;
-    }
-    return false;
+    return window.allowEditActions == true
 }
 
 
@@ -112,6 +154,31 @@ var Meal = BaseModel.extend({
 });
 
 
+
+
+/* Collections */
+
+var API_URL = '/food/api/v1/';
+var DjangoCollection = Backbone.Collection.extend({
+    // Return proper objects from tastypie response
+    parse: function(response) {
+        return response.objects;
+    },
+});
+
+window.IngredientCollection = DjangoCollection.extend({
+    model: Ingredient,
+    url: API_URL + 'ingredient/',
+});
+
+window.MealCollection = DjangoCollection.extend({
+    model: Meal,
+    url: API_URL + 'meal/',
+});
+
+
+
+
 /* Views */
 
 var BaseView = Backbone.View.extend({
@@ -196,7 +263,9 @@ var IngredientView = BaseView.extend({
         // Default view
         else
         {
-            this.$el.html(factory.vdiv().html(this.model.get('name')));
+            this.$el.html($('#IngredientView-template').html());
+            this.$('.ingredient-name').html(this.model.get('name'));
+    
             // Selected view
             if (this.model.get('selected'))
             {
@@ -212,7 +281,6 @@ var IngredientView = BaseView.extend({
     },
 
     updateFilterView: function() {
-        debugger;
         filterMealView();  
     },
 });
@@ -234,12 +302,13 @@ var MealView = BaseView.extend({
 
     render: function() {
         // Inflate template
-        this.$el.html(meal_template);
-        this.$el.children('.meal-name').html(this.model.get('name'));
-        this.$el.children('.meal-description').html(this.model.get('description'));
+        this.$el.html($('#MealView-template').html());
+
+        this.$('.meal-name').html(this.model.get('name'));
+        this.$('.meal-description').html(this.model.get('description'));
 
         // Add ingredients
-        var list = this.$el.children('.meal-ingredients');
+        var list = this.$('.meal-ingredients');
         _.each(this.model.get('ingredients'), function(ingredient) {
             list.append($('<li/>').addClass('inner').html(ingredient.name));
         });
@@ -334,29 +403,7 @@ function filterMealView(type)
     populateCollectionViews(meals, addMealView, filter);
 }
 
-/* Collections */
-
-var DjangoCollection = Backbone.Collection.extend({
-
-    // Return proper objects from tastypie response
-    parse: function(response) {
-        return response.objects
-    }
-});
-
-
-var Ingredients = DjangoCollection.extend({
-    model: Ingredient,
-    url: API_ROOT + 'ingredient/',
-});
-
-var Meals = DjangoCollection.extend({
-    model: Meal,
-    url: API_ROOT + 'meal/',
-});
-
-
-function fetchMeals() {
+function fetchMeals () {
     meals.fetch({
         success: function(collection, response) {
             filterMealView();
@@ -368,66 +415,6 @@ function fetchMeals() {
         },
     });
 }
-
-
-/* Logic */
-$(function() {
-
-    // Create progress bars
-    ing_progress = factory.progress($('#ingredient-list')).css('width', '0%');
-    meal_progress = factory.progress($('#meal-list')).css('width', '0%');
-    _.defer(function() { ing_progress.css('width', '100%'); });
-    _.defer(function() { meal_progress.css('width', '100%'); });
-
-    // Load initial data
-    ingredients = new Ingredients;
-    ingredients.fetch({
-        success: function(collection) {
-            populateCollectionViews(collection, addIngredientView);
-            ing_progress.parent('div').remove();
-        },
-        error: function(collection) {
-            showIngredientError("Error loading ingredient set.");
-            ing_progress.parent('div').remove();
-        },
-    });
-
-    meals = new Meals;
-    fetchMeals();
-
-    // Setup non-backbone UI
-    $('#add-ingredient').click(function(e) {
-        if (!new_ingredient_view)
-        {
-            // Create a new client-side ingredient and render
-            var new_model = new Ingredient({name: 'New Ingredient'});
-            ingredients.add(new_model);
-            new_ingredient_view = addIngredientView(new_model);
-            new_ingredient_view.render();
-        }
-
-        // Activate editing and jump to view
-        new_ingredient_view.model.enableEditing();
-        showEditView(new_ingredient_view);
-    });
-
-    $('#add-meal').click(function(e) {
-        // Populate edit template
-        var new_model = new Meal({name: 'New Meal'});
-        meals.add(new_model);
-        modal = inflateMealEditTemplate(new_model).modal();
-    });
-
-
-    $('#switch-all').click(function(){ return filterMealView('all') });
-    $('#switch-union').click(function(){ return filterMealView('union') });
-    $('#switch-intersection').click(function(){ return filterMealView('intersection') });
-
-    $('#help-button').popover({
-        placement: 'bottom',
-    });
-
-});
 
 
 /* Factories */
@@ -491,7 +478,7 @@ function showError(id, response)
 function inflateMealEditTemplate(model)
 {
     // Base template
-    var $el = $(meal_edit_template);
+    var $el = $($('#MealEditView-template').html());
 
     // Populate ingredients widget
     ingredients.filter(function(i) {return !i.isNew()}).forEach(function(ingredient) {
@@ -512,50 +499,65 @@ function inflateMealEditTemplate(model)
     return $el;
 }
 
-var meal_edit_template = [
-    '<div class="modal">'                                           ,
-    '   <div class="modal-header">'                                 ,
-    '       <a class="close" data-dismiss="modal">×</a>'            ,
-    '       <h1>Create/Edit Meal</h1>'                              ,
-    '   </div>'                                                     ,
-    '   <div class="modal-body">'                                   ,
-    '   <form class="form-horizontal">'                             ,  
-    '    <div class="control-group">'                               ,
-    '        <label class="control-label" for="meal-name">Name</label>'  ,
-    '        <div class="controls">'                                ,
-    '            <input type="input-xlarge" id="meal-name">'             ,
-    '        </div>'                                                ,
-    '    </div>'                                                    ,
-    '    <div class="control-group">'                               ,
-    '        <label class="control-label" for="meal-description">Description</label>',
-    '        <div class="controls">'                                ,
-    '            <textarea id="meal-description"/>'                      ,
-    '        </div>'                                                ,
-    '    </div>'                                                    ,
-    '    <div class="control-group">',
-    '       <label class="control-label" for="meal-ingredients">Ingredients</label>',
-    '       <div class="controls">',
-    '           <select size="20" id="meal-ingredients" multiple="multiple"/>',
-    '       </div>',
-    '   </div>',
-    '</form>'                                                       ,
-    '   </div>'                                                     ,
-    '   <div class="modal-footer">'                                 ,
-    '       <button class="btn btn-primary save-button">Save</button>',
-    '   </div>'                                                     ,
-    '</div>'                                                        ,
-].join('\n');
-
-var meal_template = [
-    '<h2 class="meal-name">Name</h2>',
-    '<p class="meal-description">Description</p>',
-    '<div class="meal-ingredients">',
-    '   <ul/>',
-    '</div>',
-].join('\n');
-
 
 /* Page load state */
 $(function() {
+    // Create progress bars
+    ing_progress = factory.progress($('#ingredient-list')).css('width', '0%');
+    meal_progress = factory.progress($('#meal-list')).css('width', '0%');
+    _.defer(function() { ing_progress.css('width', '100%'); });
+    _.defer(function() { meal_progress.css('width', '100%'); });
+
+
+    // Load initial data
+    ingredients = new IngredientCollection;
+    ingredients.fetch({
+        success: function(collection) {
+            populateCollectionViews(collection, addIngredientView);
+            ing_progress.parent('div').remove();
+        },
+        error: function(collection) {
+            showIngredientError("Error loading ingredient set.");
+            ing_progress.parent('div').remove();
+        },
+    });
+
+    meals = new MealCollection;
+    fetchMeals();
+
+    // Setup non-backbone UI
+    $('#add-ingredient').click(function(e) {
+        if (!new_ingredient_view)
+        {
+            // Create a new client-side ingredient and render
+            var new_model = new Ingredient({name: 'New Ingredient'});
+            ingredients.add(new_model);
+            new_ingredient_view = addIngredientView(new_model);
+            new_ingredient_view.render();
+        }
+
+        // Activate editing and jump to view
+        new_ingredient_view.model.enableEditing();
+        showEditView(new_ingredient_view);
+    });
+
+    $('#add-meal').click(function(e) {
+        // Populate edit template
+        var new_model = new Meal({name: 'New Meal'});
+        meals.add(new_model);
+        modal = inflateMealEditTemplate(new_model).modal();
+    });
+
+
+    $('#switch-all').click(function(){ return filterMealView('all') });
+    $('#switch-union').click(function(){ return filterMealView('union') });
+    $('#switch-intersection').click(function(){ return filterMealView('intersection') });
+
+    $('#help-button').popover({
+        placement: 'bottom',
+    });    
+
     $('#switch-intersection').click();
 })
+
+</script>

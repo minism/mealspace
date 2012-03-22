@@ -47,17 +47,22 @@
 
 {% endblock %}
 
+
+
 {% block scripts %}
-{{ super() }}
-<script>
-    // Show edit controls if logged in
-    window.allowEditActions = false;
-    {% if user.is_authenticated() %}
-        window.allowEditActions = true;
-        $(function()
-        {
-            $('.edit-controls').show();
+
+    {{ super() }}
+
+    {% include "food/backbone.html" %}
+
+    <script>
+        $(function() {
+            // Show edit controls if logged in
+            {% if user.is_authenticated() %}
+                window.allowEditActions = true;
+                $('.edit-controls').show();
+            {% endif %}
         });
-    {% endif %}
-</script>
+    </script>
+
 {% endblock %}

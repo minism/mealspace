@@ -8,9 +8,6 @@
 
         <title>{% block page_title %}Mealspace{% endblock %}</title>
         {% block styles %}
-            <!-- <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Telex" type="text/css"> -->
-            <!-- <link rel="stylesheet" href="{{STATIC_URL}}css/theme/jquery-ui-1.8.17.custom.css" type="text/css"> -->
-            <!-- <link rel="stylesheet" href="{{STATIC_URL}}css/reset.css" type="text/css"> -->
             {% if debug %}
                 <link rel="stylesheet/less" href="{{STATIC_URL}}bootstrap/less/bootstrap.less" type="text/css">
                 <link rel="stylesheet/less" href="{{STATIC_URL}}css/screen.less">
@@ -59,7 +56,6 @@
             <script src="{{STATIC_URL}}bootstrap/js/bootstrap-tooltip.js"></script>
             <script src="{{STATIC_URL}}bootstrap/js/bootstrap-popover.js"></script>
 
-            <script src="{{STATIC_URL}}js/app.js"></script>
             <script src="{{STATIC_URL}}js/extra.js"></script>
         {% endblock %}
     </body>
