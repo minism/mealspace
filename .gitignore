@@ -7,5 +7,5 @@ staticfiles/*
 media/*
 push.sh
 apps/mainsite/static/css/screen.css
-apps/mainsite/static/bootstrap/bootstrap.css
+apps/mainsite/static/bootstrap/css/bootstrap.css
 local.sqlite
