@@ -7,3 +7,4 @@ staticfiles/*
 media/*
 push.sh
 apps/mainsite/static/css/screen.css
+local.sqlite
