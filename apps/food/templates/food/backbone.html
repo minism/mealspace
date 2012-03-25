@@ -14,37 +14,35 @@
 </script>
 
 <script type="text/template" id="MealEditView-template">
-    <div class="modal">
-       <div class="modal-header">
-           <a class="close" data-dismiss="modal">×</a>
-           <h1>Create/Edit Meal</h1>
-       </div>
-       <div class="modal-body">
-       <form class="form-horizontal">
-        <div class="control-group">
-            <label class="control-label" for="meal-name">Name</label>
-            <div class="controls">                               
-                <input type="input-xlarge" id="meal-name">
-            </div>
+   <div class="modal-header">
+       <a class="close" data-dismiss="modal">×</a>
+       <h1>Create/Edit Meal</h1>
+   </div>
+   <div class="modal-body">
+   <form class="form-horizontal">
+    <div class="control-group">
+        <label class="control-label">Name</label>
+        <div class="controls">                               
+            <input type="input-xlarge" class="meal-edit-name">
         </div>
-        <div class="control-group">
-        <label class="control-label" for="meal-description">Description</label>
-           <div class="controls">
-                <textarea id="meal-description"/>
-            </div>
-        </div>
-        <div class="control-group">
-           <label class="control-label" for="meal-ingredients">Ingredients</label>
-           <div class="controls">
-               <select size="20" id="meal-ingredients" multiple="multiple"/>
-           </div>
-       </div>
-    </form>
-       </div>
-       <div class="modal-footer">
-           <button class="btn btn-primary save-button">Save</button>
-       </div>
     </div>
+    <div class="control-group">
+    <label class="control-label">Description</label>
+       <div class="controls">
+            <textarea class="meal-edit-description"/>
+        </div>
+    </div>
+    <div class="control-group">
+       <label class="control-label">Ingredients</label>
+       <div class="controls">
+           <select size="20" class="meal-edit-ingredients" multiple="multiple"/>
+       </div>
+   </div>
+</form>
+   </div>
+   <div class="modal-footer">
+       <button class="btn btn-primary save-button">Save</button>
+   </div>
 </script>
 
 
@@ -102,7 +100,7 @@ var Ingredient = BaseModel.extend({
 
     editForm: function() {
         var obj = factory.div().addClass('edit form-inline')
-                         .append($('<input class="input-medium" type="text"/>').attr('value', this.get('name')))
+                         .append($('<input class="input-small" type="text"/>').attr('value', this.get('name')))
                          .append($('<button class="cancel btn">Cancel</button>'))
                          .append($('<button class="save btn">Save</button>'));
         return obj
@@ -123,7 +121,7 @@ var Meal = BaseModel.extend({
         ingredient_ids = []
         try
         {
-            ingredient_ids = $('#meal-ingredients > option:selected').map(function() { return $(this).val(); });
+            ingredient_ids = form.find('.meal-edit-ingredients > option:selected').map(function() { return $(this).val(); });
         }
         catch (e)
         {
@@ -480,15 +478,15 @@ function showError(id, response)
 function inflateMealEditTemplate(model)
 {
     // Base template
-    var $el = $($('#MealEditView-template').html());
+    var $el = factory.vdiv().addClass('modal').html($('#MealEditView-template').html());
 
     // Populate ingredients widget
     ingredients.filter(function(i) {return !i.isNew()}).forEach(function(ingredient) {
-        $el.find('#meal-ingredients').append(
+        $el.find('.meal-edit-ingredients').append(
             $('<option/>').attr('value', ingredient.id).html(ingredient.get('name'))
         );
-        $el.find('#meal-name').attr('value', model.get('name'));
-        $el.find('#meal-description').attr('value', model.get('description'));
+        $el.find('.meal-edit-name').attr('value', model.get('name'));
+        $el.find('.meal-edit-description').attr('value', model.get('description'));
     });
 
     // Setup save button
@@ -497,10 +495,8 @@ function inflateMealEditTemplate(model)
         $el.modal('hide');
         model.saveFromForm($el); 
     });
-
     return $el;
 }
-
 
 /* Page load state */
 $(function() {
@@ -551,6 +547,7 @@ $(function() {
         var new_model = new Meal({name: 'New Meal'});
         meals.add(new_model);
         modal = inflateMealEditTemplate(new_model).modal();
+        modal.find('select').chosen();
     });
 
 
