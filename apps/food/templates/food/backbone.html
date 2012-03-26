@@ -296,7 +296,8 @@ var MealView = BaseView.extend({
     edit: function() {
         if (documentEditable())
         {
-            inflateMealEditTemplate(this.model).modal();   
+            var modal = inflateMealEditTemplate(this.model).modal();
+            modal.find('.meal-edit-ingredients').chosen();
         }
     },
 
@@ -352,6 +353,11 @@ function populateCollectionViews(collection, viewConstructor, filter)
     });
 }
 
+function mealIngredients(meal)
+{
+    return _.pluck(meal.get('ingredients'), 'id');
+}
+
 function filterMealView(type)
 {
     if (type)
@@ -371,11 +377,6 @@ function filterMealView(type)
     var selected_ingredient_ids = _.pluck(ingredients.filter(function(i) { 
         return i.get('selected');
     }), 'id');
-
-    function mealIngredients(meal)
-    {
-        return _.pluck(meal.get('ingredients'), 'id');
-    }
 
     // Determine filter function based on type
     var filter = function() { return false; }
@@ -481,10 +482,14 @@ function inflateMealEditTemplate(model)
     var $el = factory.vdiv().addClass('modal').html($('#MealEditView-template').html());
 
     // Populate ingredients widget
+    var current_ids = mealIngredients(model);
     ingredients.filter(function(i) {return !i.isNew()}).forEach(function(ingredient) {
-        $el.find('.meal-edit-ingredients').append(
-            $('<option/>').attr('value', ingredient.id).html(ingredient.get('name'))
-        );
+        var option = $('<option/>').attr('value', ingredient.id).html(ingredient.get('name'));
+        if (_.any(current_ids, function(id) { return id == ingredient.id  }))
+        {
+            option.attr('selected', 'selected');
+        }
+        $el.find('.meal-edit-ingredients').append(option);
         $el.find('.meal-edit-name').attr('value', model.get('name'));
         $el.find('.meal-edit-description').attr('value', model.get('description'));
     });
@@ -493,8 +498,9 @@ function inflateMealEditTemplate(model)
     $el.find('.save-button').click(function (e) {
         console.log('clicked');
         $el.modal('hide');
-        model.saveFromForm($el); 
+        model.saveFromForm($el);
     });
+
     return $el;
 }
 
@@ -546,8 +552,8 @@ $(function() {
         // Populate edit template
         var new_model = new Meal({name: 'New Meal'});
         meals.add(new_model);
-        modal = inflateMealEditTemplate(new_model).modal();
-        modal.find('select').chosen();
+        var modal = inflateMealEditTemplate(new_model).modal();
+        modal.find('.meal-edit-ingredients').chosen();
     });
 
 
