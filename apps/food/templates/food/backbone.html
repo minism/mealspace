@@ -19,6 +19,7 @@
        <h1>Create/Edit Meal</h1>
    </div>
    <div class="modal-body">
+   <div class="meal-edit-error alert alert-error"></div>
    <form class="form-horizontal">
     <div class="control-group">
         <label class="control-label">Name</label>
@@ -42,6 +43,7 @@
    </div>
    <div class="modal-footer">
        <button class="btn btn-primary save-button">Save</button>
+       <button class="btn" data-dismiss="modal">Cancel</button>
    </div>
 </script>
 
@@ -50,6 +52,7 @@
 
 /* Globals */
 var new_ingredient_view = null;
+var meal_edit_dialog = null;
 var lastFilterType = 'intersection';
 
 
@@ -117,7 +120,7 @@ var Meal = BaseModel.extend({
 
     saveFromForm: function(form) {
         // Get ingredients list from form
-        ingredient_ids = []
+        var ingredient_ids = []
         try
         {
             ingredient_ids = form.find('.meal-edit-ingredients > option:selected').map(function() { return $(this).val(); });
@@ -138,8 +141,8 @@ var Meal = BaseModel.extend({
 
         // Save model
         this.save({
-            name: form.find('#meal-name').val(),
-            description: form.find('#meal-description').val(),
+            name: form.find('.meal-edit-name').val(),
+            description: form.find('.meal-edit-description').val(),
             ingredients: ingredient_objects,
         }, {
             success: function(model, response) {
@@ -294,8 +297,7 @@ var MealView = BaseView.extend({
     edit: function() {
         if (documentEditable())
         {
-            var modal = inflateMealEditTemplate(this.model).modal();
-            modal.find('.meal-edit-ingredients').chosen();
+            editMealDialog(this.model).modal().find('.meal-edit-ingredients').chosen();
         }
     },
 
@@ -474,10 +476,11 @@ function showError(id, response)
 
 /* Meal edit template */
 
-function inflateMealEditTemplate(model)
+function editMealDialog(model)
 {
     // Base template
-    var $el = factory.vdiv().addClass('modal').html($('#MealEditView-template').html());
+    meal_edit_dialog = meal_edit_dialog || factory.vdiv().addClass('modal').html($('#MealEditView-template').html());
+    meal_edit_dialog.find('.alert').hide()
 
     // Populate ingredients widget
     var current_ids = mealIngredients(model);
@@ -487,19 +490,36 @@ function inflateMealEditTemplate(model)
         {
             option.attr('selected', 'selected');
         }
-        $el.find('.meal-edit-ingredients').append(option);
-        $el.find('.meal-edit-name').attr('value', model.get('name'));
-        $el.find('.meal-edit-description').attr('value', model.get('description'));
+        meal_edit_dialog.find('.meal-edit-ingredients').append(option);
+        meal_edit_dialog.find('.meal-edit-name').val(model.get('name'));
+        meal_edit_dialog.find('.meal-edit-description').val(model.get('description'));
     });
 
     // Setup save button
-    $el.find('.save-button').click(function (e) {
-        console.log('clicked');
-        $el.modal('hide');
-        model.saveFromForm($el);
+    meal_edit_dialog.find('.save-button').unbind('click');
+    meal_edit_dialog.find('.save-button').click(function (e) {
+        var error = validateMealDialog()
+        if (!error)
+        {
+            meal_edit_dialog.modal('hide');
+            model.saveFromForm(meal_edit_dialog);
+        }
+        else
+        {
+            meal_edit_dialog.find('.meal-edit-error').html(error).show();
+        }
     });
 
-    return $el;
+    return meal_edit_dialog;
+}
+
+function validateMealDialog()
+{
+    if (!meal_edit_dialog.find('.meal-edit-name').val())
+        return "Name cannot be blank"
+    if (meal_edit_dialog.find('.meal-edit-ingredients > option:selected').length < 1)
+        return "Must select at least one ingredient"
+    return null
 }
 
 /* Page load state */
@@ -548,10 +568,9 @@ $(function() {
 
     $('#add-meal').click(function(e) {
         // Populate edit template
-        var new_model = new Meal({name: 'New Meal'});
+        var new_model = new Meal;
         meals.add(new_model);
-        var modal = inflateMealEditTemplate(new_model).modal();
-        modal.find('.meal-edit-ingredients').chosen();
+        editMealDialog(new_model).modal().find('.meal-edit-ingredients').chosen();
     });
 
 
