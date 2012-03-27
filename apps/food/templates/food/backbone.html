@@ -294,6 +294,10 @@ var MealView = BaseView.extend({
         'dblclick': 'edit',
     },
 
+    initialize: function(options) {
+        this.selected_ingredients = options.selected_ingredients || [];
+    },
+
     edit: function() {
         if (documentEditable())
         {
@@ -310,8 +314,15 @@ var MealView = BaseView.extend({
 
         // Add ingredients
         var list = this.$('.meal-ingredients');
+        var selected_ingredients = this.selected_ingredients;
         _.each(this.model.get('ingredients'), function(ingredient) {
-            list.append($('<li/>').addClass('inner').html(ingredient.name));
+            var li = $('<li/>').addClass('inner').html(ingredient.name);
+            // debugger;
+            if (_.contains(selected_ingredients, ingredient.id))
+            {
+                li.addClass('selected');
+            }
+            list.append(li);
         });
         return this;
     },
@@ -335,6 +346,7 @@ function addMealView(model)
     // Instantiate view on model
     var view = new MealView({
         model: model,
+        selected_ingredients: getSelectedIngredientIds(),
     });
 
     // Add element to dom
@@ -358,6 +370,13 @@ function mealIngredients(meal)
     return _.pluck(meal.get('ingredients'), 'id');
 }
 
+function getSelectedIngredientIds()
+{
+    return _.pluck(ingredients.filter(function(i) { 
+        return i.get('selected');
+    }), 'id');
+}
+
 function filterMealView(type)
 {
     if (type)
@@ -374,9 +393,7 @@ function filterMealView(type)
     $('#meal-list').empty();
 
     // Get selected ingredient ids
-    var selected_ingredient_ids = _.pluck(ingredients.filter(function(i) { 
-        return i.get('selected');
-    }), 'id');
+    var selected_ingredient_ids = getSelectedIngredientIds();
 
     // Determine filter function based on type
     var filter = function() { return false; }
