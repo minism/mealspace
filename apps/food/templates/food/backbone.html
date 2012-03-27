@@ -23,21 +23,21 @@
     <div class="control-group">
         <label class="control-label">Name</label>
         <div class="controls">                               
-            <input type="input-xlarge" class="meal-edit-name">
-        </div>
-    </div>
-    <div class="control-group">
-    <label class="control-label">Description</label>
-       <div class="controls">
-            <textarea class="meal-edit-description"/>
+            <input type="input-xlarge" class="meal-edit-name"></input>
         </div>
     </div>
     <div class="control-group">
        <label class="control-label">Ingredients</label>
        <div class="controls">
-           <select size="20" class="meal-edit-ingredients" multiple="multiple"/>
+           <select size="20" class="meal-edit-ingredients" multiple="multiple"></select>
        </div>
    </div>
+    <div class="control-group">
+    <label class="control-label">Description</label>
+       <div class="controls">
+            <textarea class="meal-edit-description" rows="7" cols="100"></textarea>
+        </div>
+    </div>
 </form>
    </div>
    <div class="modal-footer">
@@ -109,7 +109,6 @@ var Ingredient = BaseModel.extend({
 
 var Meal = BaseModel.extend({
     validate: function(attrs) {
-        debugger;
         if (attrs.ingredients == undefined || attrs.ingredients.length < 1)
         {
             return "Must select at least once ingredient.";
@@ -235,7 +234,6 @@ var IngredientView = BaseView.extend({
             this.model.save({name: newName}, {
                 success: success,
                 error: function(model, response) {
-                    debugger;
                     if (response.status && response.status == 401)
                         return showIngredientError("You don't have permission to do that.");
                     return showIngredientError(response);
@@ -483,7 +481,7 @@ function inflateMealEditTemplate(model)
 
     // Populate ingredients widget
     var current_ids = mealIngredients(model);
-    ingredients.filter(function(i) {return !i.isNew()}).forEach(function(ingredient) {
+    ingredients.filter(function(i) {return i.id != undefined}).forEach(function(ingredient) {
         var option = $('<option/>').attr('value', ingredient.id).html(ingredient.get('name'));
         if (_.any(current_ids, function(id) { return id == ingredient.id  }))
         {

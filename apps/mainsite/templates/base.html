@@ -8,6 +8,7 @@
 
         <title>{% block page_title %}Mealspace{% endblock %}</title>
         {% block styles %}
+            <link rel="stylesheet" href="{{STATIC_URL}}css/chosen.css" type="text/css">
             {% if debug %}
                 <link rel="stylesheet/less" href="{{STATIC_URL}}bootstrap/less/bootstrap.less" type="text/css">
                 <link rel="stylesheet/less" href="{{STATIC_URL}}css/screen.less">
@@ -16,7 +17,6 @@
                 <link rel="stylesheet" href="{{STATIC_URL}}bootstrap/css/bootstrap.css" type="text/css">
                 <link rel="stylesheet" href="{{STATIC_URL}}css/screen.css" type="text/css">
             {% endif %}
-            <link rel="stylesheet" href="{{STATIC_URL}}css/chosen.css" type="text/css">
         {% endblock %}
     </head>
 
