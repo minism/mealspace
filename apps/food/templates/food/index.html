@@ -49,7 +49,7 @@
 
 
 <div id="footer-return">
-    <h1>To top &uarr;</h1>
+    <h2>To top &uarr;</h2>
 </div>
 
 {% endblock %}
@@ -81,10 +81,10 @@
 
             $(window).scroll(function() {
                 if (window.scrollY > 0) {
-                    $('#footer-return').fadeIn();
+                    $('#footer-return').show();
                 }
                 else {
-                    $('#footer-return').fadeOut();
+                    $('#footer-return').hide();
                 }
             });
         });
