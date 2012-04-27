@@ -590,6 +590,12 @@ $(function() {
         editMealDialog(new_model).modal().find('.meal-edit-ingredients').chosen();
     });
 
+    $('#reset-selection').click(function() {
+        ingredients.each(function(ingredient) {
+            ingredient.set('selected', false) 
+        });
+    })
+
 
     $('#switch-all').click(function(){ return filterMealView('all') });
     $('#switch-union').click(function(){ return filterMealView('union') });

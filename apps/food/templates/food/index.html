@@ -7,9 +7,9 @@
         <div class="headbox boxy">
             <h1>Ingredients</h1>
             <button class="btn btn-primary inline-button edit-controls" id="add-ingredient">+</button>
+            <button class="btn inline-button" id="reset-selection">Reset</button>
             <div class="input-prepend">
-                <span class="add-on"><i class="icon-search"></i></span>
-                <input type="text" id="search" class="input-medium" placeholder="Filter"/>
+                <input type="text" id="search" placeholder="Filter"/>
                 <a href="#" class="icon-remove" id="clear-search"></a>
             </div>
         </div>
@@ -62,6 +62,9 @@
             {% if user.is_authenticated() %}
                 window.allowEditActions = true;
                 $('.edit-controls').show();
+
+                // Fix input width
+                $('#search').css('width', '134px');
             {% endif %}
         });
     </script>
