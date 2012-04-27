@@ -52,7 +52,6 @@
 
 /* Globals */
 var new_ingredient_view = null;
-var meal_edit_dialog = null;
 var lastFilterType = 'intersection';
 
 
@@ -496,11 +495,12 @@ function showError(id, response)
 function editMealDialog(model)
 {
     // Base template
-    meal_edit_dialog = meal_edit_dialog || factory.vdiv().addClass('modal').html($('#MealEditView-template').html());
+    var meal_edit_dialog = factory.vdiv().addClass('modal').html($('#MealEditView-template').html());
     meal_edit_dialog.find('.alert').hide()
 
     // Populate ingredients widget
     var current_ids = mealIngredients(model);
+    meal_edit_dialog.find('.meal-edit-ingredients').empty()
     ingredients.filter(function(i) {return i.id != undefined}).forEach(function(ingredient) {
         var option = $('<option/>').attr('value', ingredient.id).html(ingredient.get('name'));
         if (_.any(current_ids, function(id) { return id == ingredient.id  }))
@@ -508,14 +508,15 @@ function editMealDialog(model)
             option.attr('selected', 'selected');
         }
         meal_edit_dialog.find('.meal-edit-ingredients').append(option);
-        meal_edit_dialog.find('.meal-edit-name').val(model.get('name'));
-        meal_edit_dialog.find('.meal-edit-description').val(model.get('description'));
     });
+
+    meal_edit_dialog.find('.meal-edit-name').val(model.get('name'));
+    meal_edit_dialog.find('.meal-edit-description').val(model.get('description'));
 
     // Setup save button
     meal_edit_dialog.find('.save-button').unbind('click');
     meal_edit_dialog.find('.save-button').click(function (e) {
-        var error = validateMealDialog()
+        var error = validateMealDialog(meal_edit_dialog)
         if (!error)
         {
             meal_edit_dialog.modal('hide');
@@ -530,11 +531,11 @@ function editMealDialog(model)
     return meal_edit_dialog;
 }
 
-function validateMealDialog()
+function validateMealDialog(dialog)
 {
-    if (!meal_edit_dialog.find('.meal-edit-name').val())
+    if (!dialog.find('.meal-edit-name').val())
         return "Name cannot be blank"
-    if (meal_edit_dialog.find('.meal-edit-ingredients > option:selected').length < 1)
+    if (dialog.find('.meal-edit-ingredients > option:selected').length < 1)
         return "Must select at least one ingredient"
     return null
 }
