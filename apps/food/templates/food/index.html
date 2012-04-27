@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
+<div class="container">
 
+<div class="row">
     <section class="span4 list-section" id="ingredient-section">
         <div class="headbox boxy">
             <h1>Ingredients</h1>
@@ -42,9 +43,14 @@
         </div>
         <ul class="item-list" id="meal-list" />
     </section>
+</div>
 
 </div>
 
+
+<div id="footer-return">
+    <h1>To top &uarr;</h1>
+</div>
 
 {% endblock %}
 
@@ -66,6 +72,21 @@
                 // Fix input width
                 $('#search').css('width', '134px');
             {% endif %}
+
+
+            // Footer return link
+            $('#footer-return').click(function() {
+                window.scrollTo(0, 0);
+            })
+
+            $(window).scroll(function() {
+                if (window.scrollY > 0) {
+                    $('#footer-return').fadeIn();
+                }
+                else {
+                    $('#footer-return').fadeOut();
+                }
+            });
         });
     </script>
 

@@ -41,10 +41,8 @@
         </nav>
         {% endblock %}
 
-        <section class="container">
-            {% block content %}
-            {% endblock %}
-        </section>
+        {% block content %}
+        {% endblock %}
 
         {% block scripts %}
             <script src="{{STATIC_URL}}js/jquery.js"></script>
